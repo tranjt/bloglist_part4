@@ -14,20 +14,26 @@ describe('when there is initially some blogs saved', () => {
       .map(blog => new Blog(blog))
     const promiseArray = blogObjects
       .map(blog => blog.save())
-      await Promise.all(promiseArray)
+    await Promise.all(promiseArray)
   })
 
-  test('blogs are returned as json', async()=> {
+  test('blogs are returned as json', async () => {
     await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
   })
 
-  test('return the correct amount of blogs', async()=> {
+  test('return the correct amount of blogs', async () => {
     const response = await api.get('/api/blogs')
 
     expect(response.body.length).toBe(helper.initialBlogs.length)
+  })
+
+  test('unique identifier property of the blog posts is named id ', async () => {
+    const response = await api.get('/api/blogs')
+
+    expect(response.body[0].id).toBeDefined()
   })
 
 })
