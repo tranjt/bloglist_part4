@@ -84,8 +84,8 @@ describe('Blog list POST operations', () => {
 
   test('if the title and url properties missing, server response 400 Bad Request', async () => {
     const newBlogNoTitle = {
-      "author": "Jumppapallo",
-      "url": "http://Gymnast.com"
+      'author': 'Jumppapallo',
+      'url': 'http://Gymnast.com'
     }
 
     await api
@@ -94,8 +94,8 @@ describe('Blog list POST operations', () => {
       .expect(400)
 
     const newBlogNoURL = {
-      "title": "Rankine pompa",
-      "author": "Hiina",
+      'title': 'Rankine pompa',
+      'author': 'Hiina',
     }
 
     await api
