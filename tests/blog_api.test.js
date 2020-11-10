@@ -50,10 +50,10 @@ describe('Blog list POST operations', () => {
     }
 
     await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
     const response = await api.get('/api/blogs')
 
@@ -61,28 +61,49 @@ describe('Blog list POST operations', () => {
 
     expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
     expect(urls).toContain('http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html')
-  })  
+  })
 
   test('if likes property is missing default value 0', async () => {
-
-    const newBlog = {      
+    const newBlog = {
       title: 'TDD harms architecture',
       author: 'Robert C. Martin',
-      url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html'     
+      url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html'
     }
 
     await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
     const response = await api.get('/api/blogs')
     const latestBlogIndex = response.body.length - 1
 
     expect(response.body[latestBlogIndex].likes).toBe(0)
-  }) 
-  
+  })
+
+  test('if the title and url properties missing, server response 400 Bad Request', async () => {
+    const newBlogNoTitle = {
+      "author": "Jumppapallo",
+      "url": "http://Gymnast.com"
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogNoTitle)
+      .expect(400)
+
+    const newBlogNoURL = {
+      "title": "Rankine pompa",
+      "author": "Hiina",
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogNoURL)
+      .expect(400)
+  })
+
 })
 
 afterAll(() => {
