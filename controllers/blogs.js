@@ -30,13 +30,13 @@ blogsRouter.post('/', (request, response) => {
     return response.status(400).json({
       error: 'url missing'
     })
-  } else if (!body.likes) {
-    return response.status(400).json({
-      error: 'likes missing'
-    })
   }
 
-  const blog = new Blog(body)
+  if (!body.likes) {
+    Object.assign(body, {likes: 0});
+  }
+
+  const blog = new Blog(body) 
 
   blog
     .save()

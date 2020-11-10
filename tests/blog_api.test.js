@@ -62,6 +62,27 @@ describe('Blog list POST operations', () => {
     expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
     expect(urls).toContain('http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html')
   })  
+
+  test('if likes property is missing default value 0', async () => {
+
+    const newBlog = {      
+      title: 'TDD harms architecture',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html'     
+    }
+
+    await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const latestBlogIndex = response.body.length - 1
+
+    expect(response.body[latestBlogIndex].likes).toBe(0)
+  }) 
+  
 })
 
 afterAll(() => {
