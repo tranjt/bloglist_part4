@@ -38,6 +38,32 @@ describe('when there is initially some blogs saved', () => {
 
 })
 
+
+describe('Blog list POST operations', () => {
+
+  test('a valid blog is added', async () => {
+    const newBlog = {
+      title: 'Type wars',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+      likes: 2
+    }
+
+    await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    const urls = response.body.map(r => r.url)
+
+    expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+    expect(urls).toContain('http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html')
+  })  
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
