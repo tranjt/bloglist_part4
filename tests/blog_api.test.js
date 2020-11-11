@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 
 const api = supertest(app)
@@ -35,7 +36,6 @@ describe('when there is initially some blogs saved', () => {
 
     expect(response.body[0].id).toBeDefined()
   })
-
 })
 
 
@@ -103,8 +103,72 @@ describe('Blog list POST operations', () => {
       .send(newBlogNoURL)
       .expect(400)
   })
-
 })
+
+
+describe('User api operations', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const userObjects = helper.initialUsers[0]
+    await api
+      .post('/api/users')
+      .send(userObjects)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('return the correct amount of users', async () => {
+    const response = await api.get('/api/users')
+    expect(response.body.length).toBe(helper.initialUsers.length)
+  })
+
+  test('server response 400 Bad Request if not unique username', async () => {
+    const newUserNotUnique = {
+      'username': 'root',
+      'name': 'admin',
+      'password': 'sekret'
+    }
+
+    const response = await api
+      .post('/api/users')
+      .send(newUserNotUnique)
+      .expect(400)
+
+    expect(response.body).toContain('User validation failed: username: Error, expected `username` to be unique.')
+  })
+
+  test('server response 400 Bad Request if username not at least 3 characters long ', async () => {
+    const newUser = {
+      'username': 'ro',
+      'name': 'admin',
+      'password': 'sekret'
+    }
+
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    expect(response.body).toContain('is shorter than the minimum allowed length (3)')
+  })
+
+  test('server response 400 Bad Request if password not at least 3 characters long ', async () => {
+    const newUser = {
+      'username': 'root',
+      'name': 'admin',
+      'password': 'se'
+    }
+
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    expect(response.body).toContain('is shorter than the minimum allowed length (3)')
+  })
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
