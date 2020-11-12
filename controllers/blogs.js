@@ -25,19 +25,13 @@ blogsRouter.post('/', async (request, response) => {
   }
 
   const decodedToken = jwt.verify(request.token, process.env.TOKEN_SECRET)
-
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token is invalid' })
-  }
-
+ 
   if (!body.likes) { Object.assign(body, { likes: 0 }) }
 
   const user = await User.findById(decodedToken.id)
   Object.assign(body, { user: user })
-
   const blog = new Blog(body)
-
-  const savedBlog = await blog.save()
+  const savedBlog = await blog.save()  
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
